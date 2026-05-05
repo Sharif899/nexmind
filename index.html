@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NexMind — The AI Brain You Actually Own</title>
+<meta name="description" content="NexMind is a fully decentralized AI assistant built on Nesa Layer-1. Private by default. Verifiable by design. Yours forever.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080710;
+    --bg2: #0f0e1a;
+    --bg3: #16152a;
+    --purple: #7F77DD;
+    --purple-light: #AFA9EC;
+    --purple-dark: #534AB7;
+    --purple-deep: #3C3489;
+    --white: #EEEDFE;
+    --muted: #8885aa;
+    --border: rgba(127,119,221,0.15);
+    --border-hover: rgba(127,119,221,0.35);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'DM Mono', monospace;
+    font-size: 15px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, .display {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(127,119,221,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(127,119,221,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Orb */
+  .orb {
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(127,119,221,0.12) 0%, transparent 70%);
+    top: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+    z-index: 0;
+    animation: pulse 6s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+    50% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1.2rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    background: rgba(8,7,16,0.8);
+    backdrop-filter: blur(12px);
+  }
+
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: var(--white);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .nav-logo-dot {
+    width: 8px; height: 8px;
+    background: var(--purple);
+    border-radius: 50%;
+    animation: blink 2s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--white); }
+
+  .nav-cta {
+    background: var(--purple);
+    color: var(--white) !important;
+    padding: 0.5rem 1.2rem;
+    border-radius: 4px;
+    font-size: 0.8rem !important;
+    transition: background 0.2s !important;
+  }
+
+  .nav-cta:hover { background: var(--purple-dark) !important; color: var(--white) !important; }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 8rem 2rem 4rem;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 0.35rem 1rem;
+    font-size: 0.72rem;
+    color: var(--purple-light);
+    letter-spacing: 0.08em;
+    margin-bottom: 2rem;
+    background: rgba(127,119,221,0.06);
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .hero-badge-dot {
+    width: 5px; height: 5px;
+    background: var(--purple);
+    border-radius: 50%;
+    animation: blink 1.5s infinite;
+  }
+
+  .hero h1 {
+    font-size: clamp(3rem, 8vw, 6.5rem);
+    color: var(--white);
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.6s 0.1s ease both;
+    max-width: 900px;
+  }
+
+  .hero h1 span {
+    color: var(--purple);
+  }
+
+  .hero-sub {
+    font-size: clamp(0.9rem, 2vw, 1.1rem);
+    color: var(--muted);
+    max-width: 540px;
+    margin-bottom: 3rem;
+    animation: fadeUp 0.6s 0.2s ease both;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .hero-btns {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+
+  .btn-primary {
+    background: var(--purple);
+    color: var(--white);
+    padding: 0.85rem 2rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+    transition: background 0.2s, transform 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-primary:hover { background: var(--purple-dark); transform: translateY(-1px); }
+
+  .btn-ghost {
+    border: 1px solid var(--border-hover);
+    color: var(--purple-light);
+    padding: 0.85rem 2rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .btn-ghost:hover { background: rgba(127,119,221,0.08); border-color: var(--purple); }
+
+  .hero-stats {
+    display: flex;
+    gap: 3rem;
+    margin-top: 5rem;
+    animation: fadeUp 0.6s 0.4s ease both;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--white);
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  /* SECTION */
+  section {
+    position: relative;
+    z-index: 1;
+    padding: 6rem 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-tag {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: var(--purple);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .section-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin-bottom: 1rem;
+    color: var(--white);
+  }
+
+  .section-sub {
+    color: var(--muted);
+    font-size: 0.95rem;
+    max-width: 520px;
+    margin-bottom: 3rem;
+  }
+
+  /* FEATURES GRID */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .feature-card {
+    background: var(--bg);
+    padding: 2rem;
+    transition: background 0.2s;
+  }
+
+  .feature-card:hover { background: var(--bg2); }
+
+  .feature-icon {
+    width: 40px; height: 40px;
+    border: 1px solid var(--border-hover);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.2rem;
+    background: rgba(127,119,221,0.08);
+  }
+
+  .feature-icon svg { width: 18px; height: 18px; stroke: var(--purple); fill: none; stroke-width: 1.5; }
+
+  .feature-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--white);
+    margin-bottom: 0.5rem;
+  }
+
+  .feature-desc {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* HOW IT WORKS */
+  .how-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .steps { display: flex; flex-direction: column; gap: 0; }
+
+  .step {
+    display: flex;
+    gap: 1.2rem;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+
+  .step:last-child { border-bottom: none; }
+
+  .step-num {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.7rem;
+    color: var(--purple);
+    letter-spacing: 0.1em;
+    min-width: 28px;
+    margin-top: 2px;
+  }
+
+  .step-content h4 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--white);
+    margin-bottom: 0.3rem;
+  }
+
+  .step-content p {
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  .flow-visual {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+  }
+
+  .flow-line {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  .flow-line:last-child { border-bottom: none; }
+
+  .flow-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .flow-dot.active { background: var(--purple); box-shadow: 0 0 8px var(--purple); }
+  .flow-dot.dim { background: var(--bg3); border: 1px solid var(--border-hover); }
+
+  .flow-label { color: var(--white); flex: 1; }
+  .flow-tag {
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 3px;
+    background: rgba(127,119,221,0.12);
+    color: var(--purple-light);
+    letter-spacing: 0.05em;
+  }
+
+  /* CTA */
+  .cta-section {
+    text-align: center;
+    padding: 6rem 2rem;
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--border);
+  }
+
+  .cta-section h2 {
+    font-size: clamp(2rem, 5vw, 4rem);
+    margin-bottom: 1rem;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .cta-section p {
+    color: var(--muted);
+    margin-bottom: 2.5rem;
+    font-size: 0.9rem;
+  }
+
+  /* FOOTER */
+  footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--border);
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    color: var(--white);
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+  }
+
+  .footer-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.78rem;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--white); }
+
+  .footer-copy {
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+
+  .nesa-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid var(--border-hover);
+    border-radius: 4px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.7rem;
+    color: var(--purple-light);
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  .nesa-badge:hover { background: rgba(127,119,221,0.08); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .how-wrap { grid-template-columns: 1fr; gap: 2rem; }
+    .hero-stats { gap: 2rem; }
+    footer { flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="orb"></div>
+
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-dot"></div>
+    NexMind
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="https://github.com/Sharif899/nexmind">GitHub</a></li>
+    <li><a href="https://beta.nesa.ai" class="nav-cta">Launch App →</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">
+    <div class="hero-badge-dot"></div>
+    LIVE ON NESA LAYER-1 · TESTNET
+  </div>
+  <h1>The AI brain you <span>actually own.</span></h1>
+  <p class="hero-sub">
+    Decentralized inference. End-to-end encrypted. Every response verified on-chain.
+    No server. No surveillance. No compromise.
+  </p>
+  <div class="hero-btns">
+    <a href="https://beta.nesa.ai" class="btn-primary">
+      Launch NexMind →
+    </a>
+    <a href="https://github.com/Sharif899/nexmind" class="btn-ghost">View on GitHub</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat">
+      <span class="stat-num">120K+</span>
+      <span class="stat-label">AI MODELS</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">150K+</span>
+      <span class="stat-label">NODES WORLDWIDE</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">0</span>
+      <span class="stat-label">DATA EXPOSED</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">100%</span>
+      <span class="stat-label">ON-CHAIN VERIFIED</span>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+  <span class="section-tag">// capabilities</span>
+  <h2 class="section-title">Built different.<br>By design.</h2>
+  <p class="section-sub">Every layer of NexMind is built to keep you in control — of your data, your AI, your future.</p>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+      <div class="feature-title">Private by default</div>
+      <p class="feature-desc">Queries encrypted using Nesa's Equivariant Encryption. No node ever sees your full input — not even the one processing it.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="feature-title">Verifiable outputs</div>
+      <p class="feature-desc">Every response comes with a cryptographic Zero-Knowledge Proof written on-chain. Trust math, not promises.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      </div>
+      <div class="feature-title">No GPU required</div>
+      <p class="feature-desc">Powered by Nesa's 150K+ distributed node network. Run inference from a laptop with 2GB RAM. No expensive hardware needed.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <div class="feature-title">120,000+ models</div>
+      <p class="feature-desc">Access the full Nesa model repository — LLMs, image generation, audio, vision, and domain-specific models. All on-chain.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+      </div>
+      <div class="feature-title">Earn with NES</div>
+      <p class="feature-desc">Stake NES tokens, contribute models, or run a node. Every interaction on NexMind flows value back to participants.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+      </div>
+      <div class="feature-title">DAI native</div>
+      <p class="feature-desc">NexMind is a registered Decentralized AI Application on Nesa — built with on-chain coordination, staking credibility, and transparent governance.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" style="border-top: 1px solid var(--border); padding-top: 6rem;">
+  <span class="section-tag">// architecture</span>
+  <h2 class="section-title">How it works.</h2>
+  <p class="section-sub">Four steps. Zero trust required. Fully on-chain.</p>
+
+  <div class="how-wrap">
+    <div class="steps">
+      <div class="step">
+        <span class="step-num">01</span>
+        <div class="step-content">
+          <h4>Submit encrypted query</h4>
+          <p>Your prompt is encrypted before it leaves your device. The network never sees plaintext.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">02</span>
+        <div class="step-content">
+          <h4>Model sharded across nodes</h4>
+          <p>The AI model is split into pieces distributed across multiple nodes. No single node has the full picture.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">03</span>
+        <div class="step-content">
+          <h4>Private inference executed</h4>
+          <p>Nodes compute on encrypted data using Nesa's HSS-EE cryptography. Your data stays sealed.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">04</span>
+        <div class="step-content">
+          <h4>Verified result returned</h4>
+          <p>A ZK proof is generated, written on-chain, and the verified answer delivered to you.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-visual">
+      <div class="flow-line">
+        <div class="flow-dot active"></div>
+        <span class="flow-label">user.query(encrypted)</span>
+        <span class="flow-tag">AES-256</span>
+      </div>
+      <div class="flow-line">
+        <div class="flow-dot active"></div>
+        <span class="flow-label">nesa.routeToNodes()</span>
+        <span class="flow-tag">VRF</span>
+      </div>
+      <div class="flow-line">
+        <div class="flow-dot active"></div>
+        <span class="flow-label">nodes.inferSharded()</span>
+        <span class="flow-tag">HSS-EE</span>
+      </div>
+      <div class="flow-line">
+        <div class="flow-dot active"></div>
+        <span class="flow-label">chain.writeProof()</span>
+        <span class="flow-tag">ZK-SNARK</span>
+      </div>
+      <div class="flow-line">
+        <div class="flow-dot active"></div>
+        <span class="flow-label">user.receive(verified)</span>
+        <span class="flow-tag">✓ ON-CHAIN</span>
+      </div>
+      <div style="padding-top: 1.2rem; border-top: 1px solid var(--border); margin-top: 0.5rem;">
+        <span style="font-size:0.68rem; color: var(--purple-light); letter-spacing:0.08em;">POWERED BY NESA LAYER-1</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section">
+  <h2>Your AI. Your data.<br><span style="color:var(--purple)">Your chain.</span></h2>
+  <p>Join the decentralized AI revolution. No waitlist. No surveillance. Just intelligence.</p>
+  <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+    <a href="https://beta.nesa.ai" class="btn-primary">Launch on Nesa →</a>
+    <a href="https://github.com/Sharif899/nexmind" class="btn-ghost">Read the docs</a>
+  </div>
+  <div style="margin-top:2.5rem;">
+    <a href="https://nesa.ai" class="nesa-badge" target="_blank">
+      ⬡ Exclusive on Nesa Layer-1
+    </a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">NexMind</div>
+  <ul class="footer-links">
+    <li><a href="https://github.com/Sharif899/nexmind">GitHub</a></li>
+    <li><a href="https://docs.nesa.ai/nesa">Docs</a></li>
+    <li><a href="https://beta.nesa.ai">Playground</a></li>
+    <li><a href="https://nesa.ai">Nesa</a></li>
+  </ul>
+  <div class="footer-copy">© 2025 NexMind · Built on Nesa</div>
+</footer>
+
+</body>
+</html>
